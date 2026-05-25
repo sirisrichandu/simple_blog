@@ -15,21 +15,21 @@ function CreateBlog() {
   });
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
 
     try {
 
-      await API.post("/", formData);
+      const response = await API.post("/", formData);
+
+      console.log("SUCCESS:", response.data);
 
       toast.success(
         "Blog Created Successfully"
@@ -39,7 +39,9 @@ function CreateBlog() {
 
     } catch(error) {
 
-      console.log(error.response?.data);
+      console.log("FULL ERROR:", error);
+      console.log("RESPONSE:", error.response);
+      console.log("DATA:", error.response?.data);
 
       toast.error(
         "Failed to create blog"

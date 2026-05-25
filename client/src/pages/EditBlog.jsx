@@ -1,128 +1,146 @@
 import { useEffect, useState } from "react";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from "../services/api";
 
-function EditBlog(){
+function EditBlog() {
 
-const {id}=useParams();
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-const navigate=useNavigate();
+  const [formData, setFormData] = useState({
+    title: "",
+    author: "",
+    category: "Technology",
+    content: ""
+  });
 
-const [formData,setFormData]=useState({
-title:"",
-author:"",
-content:""
-});
+  useEffect(() => {
+    fetchBlog();
+  }, [id]);
 
+  const fetchBlog = async () => {
 
-useEffect(()=>{
+    try {
 
-fetchBlog();
+      const res = await API.get(`/${id}`);
 
-},[]);
+      setFormData({
+        title: res.data?.title || "",
+        author: res.data?.author || "",
+        category: res.data?.category || "Technology",
+        content: res.data?.content || ""
+      });
 
+    } catch (error) {
 
-const fetchBlog=async()=>{
+      console.log("Fetch Error:", error);
 
-try{
+      toast.error("Failed to load blog");
 
-const res=await API.get(`/${id}`);
+    }
 
-setFormData(res.data);
+  };
 
-}catch(error){
+  const handleChange = (e) => {
 
-console.log(error);
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
 
-}
+  };
 
-};
+  const handleSubmit = async (e) => {
 
+    e.preventDefault();
 
-const handleChange=(e)=>{
+    try {
 
-setFormData({
-...formData,
-[e.target.name]:e.target.value
-});
+      await API.put(
+        `/${id}`,
+        formData
+      );
 
-};
+      toast.success(
+        "Blog Updated Successfully"
+      );
 
+      navigate("/");
 
-const handleSubmit=async(e)=>{
+    } catch (error) {
 
-e.preventDefault();
+      console.log("Update Error:", error);
 
-try{
+      toast.error(
+        "Failed to update blog"
+      );
 
-await API.put(
-`/${id}`,
-formData
-);
+    }
 
-toast.success(
-"Blog Updated Successfully"
-);
+  };
 
-navigate("/");
+  return (
 
-}catch(error){
+    <div style={{ padding:"30px" }}>
 
-console.log(error);
+      <h1>Edit Blog</h1>
 
-}
+      <form onSubmit={handleSubmit}>
 
-};
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          value={formData.title}
+          onChange={handleChange}
+        />
 
+        <br/><br/>
 
-return(
+        <input
+          type="text"
+          name="author"
+          placeholder="Author"
+          value={formData.author}
+          onChange={handleChange}
+        />
 
-<div style={{
-padding:"30px"
-}}>
+        <br/><br/>
 
-<h1>Edit Blog</h1>
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+        >
+          <option value="Technology">Technology</option>
+          <option value="Travel">Travel</option>
+          <option value="Sports">Sports</option>
+          <option value="Food">Food</option>
+          <option value="Education">Education</option>
+        </select>
 
-<form onSubmit={handleSubmit}>
+        <br/><br/>
 
-<input
-type="text"
-name="title"
-value={formData.title}
-onChange={handleChange}
-/>
+        <textarea
+          name="content"
+          rows="8"
+          cols="50"
+          value={formData.content}
+          onChange={handleChange}
+        />
 
-<br/><br/>
+        <br/><br/>
 
-<input
-type="text"
-name="author"
-value={formData.author}
-onChange={handleChange}
-/>
+        <button type="submit">
+          Update Blog
+        </button>
 
-<br/><br/>
+      </form>
 
-<textarea
-name="content"
-rows="8"
-cols="50"
-value={formData.content}
-onChange={handleChange}
-/>
+    </div>
 
-<br/><br/>
-
-<button type="submit">
-Update Blog
-</button>
-
-</form>
-
-</div>
-
-)
+  );
 
 }
 
