@@ -5,11 +5,21 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors({
-  origin: "https://simple-blog-omega-puce.vercel.app",
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  credentials: true
-}));
+// VERY IMPORTANT
+app.options("*", cors());
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://simple-blog-omega-puce.vercel.app",
+      "https://simple-blog-rd2o7o30f-sirisrichandus-projects.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true
+  })
+);
 
 app.use(express.json());
 
