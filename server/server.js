@@ -7,29 +7,33 @@ const app = express();
 
 // Middleware
 app.use(cors());
-
 app.use(express.json());
 
-// Routes
+// Blog Routes
 app.use("/api/blogs", require("./routes/blogRoutes"));
+
+// TEST ROUTE
+app.get("/test", (req, res) => {
+    res.send("test working");
+});
+
+// Root Route
+app.get("/", (req, res) => {
+    res.send("API Running");
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {
-  console.log("MongoDB Connected");
+    console.log("MongoDB Connected");
 })
 .catch((err) => {
-  console.log("MongoDB Error:", err);
-});
-
-// Test Route
-app.get("/", (req, res) => {
-  res.send("API Running");
+    console.log("MongoDB Error:", err);
 });
 
 // Server Start
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
