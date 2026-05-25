@@ -1,43 +1,21 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+import axios from "axios";
 
-const app = express();
-
-// Middleware
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://simple-blog-omega-puce.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-  })
-);
-app.use(express.json());
-
-// Routes
-app.use("/api/blogs", require("./routes/blogRoutes"));
-
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-    console.log("MongoDB Connected");
-})
-.catch((err) => {
-    console.log("MongoDB Error:", err);
+const API = axios.create({
+  baseURL: "https://simple-blog-9940.onrender.com/api/blogs"
 });
 
-// Test route
-app.get("/", (req, res) => {
-    res.send("API Running");
-});
+// Get all blogs
+export const getBlogs = () => API.get("/");
 
-// Server start
-const PORT = process.env.PORT || 5000;
+// Create blog
+export const createBlog = (blogData) => API.post("/", blogData);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Update blog
+export const updateBlog = (id, blogData) =>
+  API.put(`/${id}`, blogData);
+
+// Delete blog
+export const deleteBlog = (id) =>
+  API.delete(`/${id}`);
+
+export default API;
